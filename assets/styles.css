@@ -1,0 +1,95 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #3f3f3f; /* Couleur de fond douce pour le corps */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px; /* Augmentation de la largeur maximale pour plus d'espace */
+    margin: auto;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne si nécessaire */
+    justify-content: center;
+}
+
+.anime {
+    margin: 15px;
+    
+    background-color: #ffffff; /* Fond blanc pour chaque anime */
+    border-radius: 8px; /* Coins arrondis pour une meilleure apparence */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère pour un effet de profondeur */
+    overflow: hidden;
+    width: 300px; /* Largeur fixe pour chaque anime */
+}
+
+.poster img {
+    width: 100%; /* Utilisation de toute la largeur de la section d'affichage */
+    height: auto; /* Garder les proportions originales de l'image */
+}
+
+.details {
+    padding: 15px;
+    
+}
+
+
+.info{
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin-left: 90%;
+    margin-top: -36px;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 18px; /* Taille de police plus petite pour les titres */
+    margin: 10px 0; /* Réduction des marges pour un meilleur espacement */
+    margin-bottom: 0px;
+}
+
+p {
+    margin: 5px 0;
+    font-size: 14px; /* Taille de police réduite pour les paragraphes */
+}
+
+/* Style pour le popup */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Fond sombre semi-transparent */
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 800px; /* Largeur maximale du popup */
+    border-radius: 8px; /* Coins arrondis pour le contenu du popup */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère pour le contenu du popup */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
