@@ -5,29 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Anime</title>
     <link rel="stylesheet" href="./assets/styles.css">
-    <style>
-       
-    </style>
 </head>
 <body>
-    <div class="container" id="animeContainer">
-        <!-- Les informations des anime seront injectées ici -->
-    </div>
+    <header>
+        <input type="text" id="searchBar" placeholder="Rechercher un anime...">
+        <label for="yearSelect">Filtrer par année :</label>
+        <select id="yearSelect">
+            <option value="">Toutes</option>
+            <option value="2024">2024+</option>
+            <option value="2023">2023+</option>
+            <option value="2022">2022+</option>
+            <option value="2020">2020+</option>
+            <option value="2015">2015+</option>
+            <option value="2000">2000+</option>
+        </select>
+        
+        <button class="category-btn" data-category="16">Anime</button>
+        <button class="category-btn" data-category="10759">Action</button>
+        <button class="category-btn" data-category="35">Comédie</button>
+
+        <button id="favoritesButton">Voir les Favoris</button>
+    </header>
     
-    <!-- Le Popup -->
-    <div id="animeModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modalBody">
-                <!-- Les détails de l'anime seront injectés ici -->
-            </div>
+    <div class="container" id="animeList"></div>
+    
+   <!-- Modale pour afficher les détails d'un anime --> 
+<!-- Modale pour afficher les détails d'un anime --> 
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="animeTitle"></h2>
+        <p id="animeDate"></p>
+        <p id="animeRating"></p>
+        <p id="animeGenres"></p>
+        <img id="animeImage" src="" alt="une Affiche">
+
+        <!-- Nouvelle boîte pour la description -->
+        <div class="modal-description">
+            <h3>Description</h3>
+            <p id="animeDescription"></p>
         </div>
     </div>
-    
-    <script src="dataanimes.js"></script>
-<script src="script.js"></script> <!-- Ton fichier principal -->
+</div>
 
+
+    
+    <script src="./js/config.js"></script>
+    <script src="./js/script.js"></script>
+    
 </body>
 </html>
-
 

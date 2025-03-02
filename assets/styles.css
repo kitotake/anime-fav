@@ -1,95 +1,200 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #3f3f3f; /* Couleur de fond douce pour le corps */
+/* Réinitialisation */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-.container {
-    max-width: 1200px; /* Augmentation de la largeur maximale pour plus d'espace */
-    margin: auto;
+/* Style du body */
+body {
+    background-color: #121212;
+    color: white;
+    text-align: center;
     padding: 20px;
+}
+
+/* Barre de recherche et boutons */
+header {
     display: flex;
-    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne si nécessaire */
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input#searchBar {
+    padding: 10px;
+    width: 250px;
+    border: none;
+    border-radius: 5px;
+}
+
+#yearSelect, button {
+    background-color: #ff4757;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #e84118;
+}
+
+/* Conteneur principal */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
     justify-content: center;
 }
 
-.anime {
-    margin: 15px;
-    
-    background-color: #ffffff; /* Fond blanc pour chaque anime */
-    border-radius: 8px; /* Coins arrondis pour une meilleure apparence */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère pour un effet de profondeur */
-    overflow: hidden;
-    width: 300px; /* Largeur fixe pour chaque anime */
+/* Cartes des animes */
+.anime-card {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    width: 220px;
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    position: relative;
+}
+
+.anime-card:hover {
+    transform: scale(1.05);
+}
+
+/* Structure interne de la carte */
+.card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .poster img {
-    width: 100%; /* Utilisation de toute la largeur de la section d'affichage */
-    height: auto; /* Garder les proportions originales de l'image */
+    width: 100%;
+    border-radius: 10px;
 }
 
-.details {
-    padding: 15px;
-    
+.card-info {
+    margin-top: 10px;
 }
 
+.card-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 5px;
+    margin-top: 10px;
+}
 
-.info{
+/* Icônes Favori et Info */
+.favorite-icon, .info-icon {
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    width: 30px;
-    height: 30px;
-    margin-left: 90%;
-    margin-top: -36px;
-    margin-bottom: 15px;
+    transition: transform 0.2s ease-in-out;
 }
 
-h1 {
-    font-size: 18px; /* Taille de police plus petite pour les titres */
-    margin: 10px 0; /* Réduction des marges pour un meilleur espacement */
-    margin-bottom: 0px;
+.favorite-icon:hover, .info-icon:hover {
+    transform: scale(1.1);
 }
 
-p {
-    margin: 5px 0;
-    font-size: 14px; /* Taille de police réduite pour les paragraphes */
-}
-
-/* Style pour le popup */
+/* MODAL */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Fond sombre semi-transparent */
-    padding-top: 60px;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal-content {
-    background-color: #ffffff;
-    margin: 5% auto;
+    background: #1e1e1e;
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 800px; /* Largeur maximale du popup */
-    border-radius: 8px; /* Coins arrondis pour le contenu du popup */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère pour le contenu du popup */
+    border-radius: 12px;
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    color: white;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
 }
 
+/* Image dans la modale */
+.modal-content img {
+    max-width: 70%;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+/* Bouton de fermeture */
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+    background-color: #ff4757;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 5px;
+    position: absolute;
+    top: 6px;
+    right: 15px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-.close:hover,
-.close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
+.close:hover {
+    transform: scale(1.2);
+}
+
+/* Nouvelle boîte pour la description */
+.modal-description {
+    background: #2a2a2a;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    text-align: left;
+    color: white;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Permet de scroller si la description est longue */
+.modal-description p {
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-y: auto;
+}
+
+/* Animation d'ouverture */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .anime-card {
+        width: 140px;
+    }
 }
