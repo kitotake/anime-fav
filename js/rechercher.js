@@ -97,3 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (window.updateFavoritesCount) window.updateFavoritesCount();
     }
 });};
+
+window.initSearch = function() {
+
+}

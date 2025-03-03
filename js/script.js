@@ -1,6 +1,3 @@
-
-let currentPage = 1;
-
 document.addEventListener("DOMContentLoaded", () => {
     // Initialiser tous les modules
     initUI();

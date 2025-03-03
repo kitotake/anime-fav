@@ -43,9 +43,9 @@ function displayAnimes() {
             </div>
             <div class="card-buttons">
                 <img class="favorite-icon" src="../assets/img/${isFavorite ? 'check.png' : 'heart-filled.png'}" 
-                    data-id="${id}" title="Favori">
+                    data-id="${id}" title="Favori" alt="">
                 <img class="info-icon" src="../assets/img/info.png" 
-                    data-id="${id}" title="Voir plus d'infos">
+                    data-id="${id}" title="Voir plus d'infos" alt="">
             </div>
             <div class="card-info">
                 <h3 class="anime-title">${name}</h3>
@@ -57,7 +57,7 @@ function displayAnimes() {
     animeList.appendChild(animeCard);
 });
     
-    document.querySelectorAll(".favorite-btn").forEach(button => {
+    document.querySelectorAll(".favorite-icon").forEach(button => {
         button.addEventListener("click", (event) => window.toggleFavorite(event.target.dataset.id, event.target));
     });
     window.updateFavoritesCount();
