@@ -13,6 +13,7 @@
     --header-bg: #ff4d4d;
     --button-bg: #ff4d4d;
     --button-hover: #e64a19;
+    --card-bg: #f5f5f5;
 }
 
 [data-theme="dark"] {
@@ -21,6 +22,7 @@
     --header-bg: #333;
     --button-bg: #ff6b6b;
     --button-hover: #d84315;
+    --card-bg: #1e1e1e;
 }
 
 body {
@@ -29,6 +31,11 @@ body {
     transition: background 0.3s, color 0.3s;
     text-align: center;
     padding: 20px;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: white;
 }
 
 header {
@@ -41,6 +48,10 @@ header {
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
+}
+
+.dark-mode header {
+    background-color: #1e1e1e;
 }
 
 #darkModeToggle {
@@ -79,51 +90,47 @@ button:hover {
     background-color: var(--button-hover);
 }
 
+/* Lien dans un bouton */
+button a {
+    color: white;
+    text-decoration: none;
+}
+
 /* Conteneur principal */
 .container {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     justify-content: center;
+    margin: 20px auto;
 }
-/*
-.anime-card img{
-   width: 225px;
-  height: 327px;  
-}*/ 
 
 .anime-card {
-    background-color: #1e1e1e;
+    background-color: var(--card-bg);
     border-radius: 10px;
     width: 220px;
     padding: 10px;
     text-align: center;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
     position: relative;
 }
 
-
 .anime-card:hover {
     transform: scale(1.05);
-}
-
-
-.anime-card:hover {
-    transform: scale(1.05);  /* Agrandissement au survol */
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
 }
 
 .anime-card h3 {
     font-size: 1rem;
     margin-top: 5px;
-    color: #fff;
+    color: var(--text-color);
 }
 
 .anime-card p {
     font-size: 0.9rem;
-    color: #bbb;
+    color: var(--text-color);
+    opacity: 0.8;
 }
-
 
 /* Carrousel */
 .swiper-container {
@@ -141,16 +148,14 @@ button:hover {
 
 .poster img {
     width: 100%;
+    height: auto;
     border-radius: 10px;
+    object-fit: cover;
 }
 
 .card-info {
     margin-top: 10px;
-}
-.card-buttons img {
-    width: 35pX;
-    height: 35px;
-
+    width: 100%;
 }
 
 .card-buttons {
@@ -159,6 +164,11 @@ button:hover {
     width: 100%;
     padding: 5px;
     margin-top: 10px;
+}
+
+.card-buttons img {
+    width: 35px;
+    height: 35px;
 }
 
 /* Icônes Favori et Info */
@@ -204,13 +214,13 @@ button:hover {
 }
 
 .modal-content {
-    background: #1e1e1e;
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 12px;
     text-align: center;
     width: 90%;
     max-width: 500px;
-    color: white;
+    color: var(--text-color);
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
     animation: fadeIn 0.3s ease-in-out;
 }
@@ -243,15 +253,15 @@ button:hover {
 
 /* Nouvelle boîte pour la description */
 .modal-description {
-    background: #2a2a2a;
+    background: rgba(0, 0, 0, 0.1);
     padding: 15px;
     margin-top: 15px;
     border-radius: 8px;
     text-align: left;
-    color: white;
+    color: var(--text-color);
     max-height: 200px;
     overflow-y: auto;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 /* Permet de scroller si la description est longue */
@@ -283,33 +293,45 @@ button:hover {
     .anime-card {
         width: 140px;
     }
+    
+    input#searchBar {
+        width: 100%;
+    }
+    
+    header {
+        flex-direction: column;
+    }
 }
 
-
+/* Swiper custom styling */
 .swiper-pagination-bullet {
     width: 8px;
     height: 8px;
     background: white;
     opacity: 0.7;
-    
 }
 
 .swiper-pagination-bullet-active {
-    background: #ff4757; /* Couleur du point actif */
+    background: #ff4757;
     opacity: 1;
-   
 }
+
 .swiper-horizontal > .swiper-pagination-bullets,
 .swiper-pagination-bullets.swiper-pagination-horizontal,
 .swiper-pagination-custom,
 .swiper-pagination-fraction {
     bottom: auto !important;
-   
 }
 
 .swiper-button-next,
 .swiper-button-prev {
-    top: 32%; /* Ajuste la position verticale */
-    
-    color: #ff4757; /* Optionnel : change la couleur si nécessaire */
+    top: 32%;
+    color: #ff4757;
+}
+
+/* Compteur de favoris */
+#favoritesCount {
+    margin: 20px 0;
+    font-size: 1.5rem;
+    color: var(--text-color);
 }

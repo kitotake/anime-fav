@@ -1,52 +1,52 @@
 // Gestion des favoris
 
-let favorites = new Set();
-let showFavoritesOnly = false;
+// Déclaration des variables globales
+window.favorites = new Set();
+window.showFavoritesOnly = false;
 
 // Initialisation des favoris
-function initFavorites() {
-    favorites = new Set(getCookie("favorites"));
-    
-    const favoritesButton = document.getElementById("favoritesButton");
-    favoritesButton.addEventListener("click", toggleFavoritesView);
-}
+window.initFavorites = function() {
+    window.favorites = new Set(window.getCookie("favorites"));
+};
 
 // Fonction pour basculer l'affichage des favoris
-function toggleFavoritesView() {
-    showFavoritesOnly = !showFavoritesOnly;
+window.toggleFavoritesView = function() {
+    window.showFavoritesOnly = !window.showFavoritesOnly;
     const favoritesButton = document.getElementById("favoritesButton");
-    favoritesButton.textContent = showFavoritesOnly 
-        ? `Voir Tous (${favorites.size} favoris)` 
-        : "Voir Favoris";
-    displayAnimes();
-}
+    
+    if (favoritesButton) {
+        favoritesButton.textContent = window.showFavoritesOnly 
+            ? `Voir Tous (${window.favorites.size} favoris)` 
+            : "Voir Favoris";
+    }
+    
+    window.displayAnimes();
+};
 
 // Fonction pour ajouter/retirer un anime des favoris
-function toggleFavorite(animeId, buttonElement) {
+window.toggleFavorite = function(animeId, buttonElement) {
     animeId = String(animeId);
-    if (favorites.has(animeId)) {
-        favorites.delete(animeId);
+    
+    if (window.favorites.has(animeId)) {
+        window.favorites.delete(animeId);
         buttonElement.textContent = "Ajouter aux Favoris";
     } else {
-        favorites.add(animeId);
+        window.favorites.add(animeId);
         buttonElement.textContent = "Retirer des Favoris";
     }
-    setCookie("favorites", Array.from(favorites), 365);
-    updateFavoritesCount();
-    if (showFavoritesOnly) displayAnimes();
-}
+    
+    window.setCookie("favorites", Array.from(window.favorites), 365);
+    window.updateFavoritesCount();
+    
+    if (window.showFavoritesOnly) window.displayAnimes();
+};
 
 // Mise à jour du compteur de favoris
-function updateFavoritesCount() {
-    let totalFavs = favorites.size;
+window.updateFavoritesCount = function() {
+    let totalFavs = window.favorites.size;
     let title = document.getElementById("favoritesCount");
 
-    if (!title) {
-        title = document.createElement("h1");
-        title.id = "favoritesCount";
-        const animeList = document.getElementById("animeList");
-        document.body.insertBefore(title, animeList);
+    if (title) {
+        title.textContent = `Total Favoris : ${totalFavs}`;
     }
-
-    title.textContent = `Total Favoris : ${totalFavs}`;
-}
+};

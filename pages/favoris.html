@@ -4,20 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Favoris</title>
-    <link rel="stylesheet" href="">
-</head>
-<body>
-    <title>Liste des Animés</title>
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
-    <link rel="stylesheet" href="./assets/styles.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
     <header>
         <button id="darkModeToggle">🌙 Mode Sombre</button>
-        <h1>Liste des Animés</h1>
+        <h1>Mes Favoris</h1>
         
         <div id="filters">
             <input type="text" id="searchBar" placeholder="Rechercher un anime...">
@@ -36,26 +28,25 @@
             <button class="category-btn" data-category="16">Anime</button>
             <button class="category-btn" data-category="10759">Action</button>
             <button class="category-btn" data-category="35">Comédie</button>
-<button>
-    <a href="index.html">← Retou</a>
-</button>
-     
-
+            
+            <button id="backButton"><a href="index.html">← Retour</a></button>
         </div>
     </header>
 
-    <h1>Mes Favoris</h1>
-    <div id="animeList"></div>
+    <h1 id="favoritesCount">Total Favoris : 0</h1>
+    <div class="container" id="animeList"></div>
     
-    <a href="index.html">← Retour</a>
+    <button id="loadMore">Voir plus</button>
 
-    <script src="./js/rechercher.js"></script>
-    <script src="./js/darkmods.js" ></script>
-    <script src="./js/cookies.js"></script>
-    <script src="./js/favoris.js"></script>
-    <script src="./js/ui.js"></script>
-    <script src="./js/script.js"></script>
-
- 
+    <!-- Scripts -->
+    <script src="../api/config.js"></script>
+    <script src="../js/cookies.js"></script>
+    <script src="../js/favoris.js"></script>
+    <script src="../js/darkmods.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/rechercher.js"></script>
+    <script src="../js/animes.js"></script>
+    <script src="../js/events.js"></script>
+    <script src="../js/script.js"></script>
 </body>
 </html>

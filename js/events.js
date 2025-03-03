@@ -1,30 +1,48 @@
-// Fichier events.js - Gestion des événements et initialisation
+// Fichier principal - Initialisation et coordination
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Initialiser la recherche
-    window.initSearch();
+    // Initialiser les variables globales si elles n'existent pas déjà
+    window.currentPage = window.currentPage || 1;
+    window.allAnimes = window.allAnimes || [];
+    window.favorites = window.favorites || new Set();
+    window.showFavoritesOnly = window.showFavoritesOnly || false;
+    
+    // Initialiser tous les modules
+    if (window.initUI) window.initUI();
+    if (window.initSearch) window.initSearch();
+    if (window.initFavorites) window.initFavorites();
     
     // Configurer le bouton pour voir les favoris
     const favoritesButton = document.getElementById("favoritesButton");
-    favoritesButton.addEventListener("click", window.toggleFavoritesView);
+    if (favoritesButton) {
+        favoritesButton.addEventListener("click", window.toggleFavoritesView);
+    }
     
     // Configurer le bouton "Charger Plus"
     const loadMoreButton = document.getElementById("loadMore");
-    loadMoreButton.addEventListener("click", () => {
-        if (window.showFavoritesOnly) {
-            window.displayAnimes();
-        } else {
-            const searchBar = document.getElementById("searchBar");
-            window.currentPage++;
-            window.fetchAnimes(searchBar.value, window.currentPage);
-        }
-    });
+    if (loadMoreButton) {
+        loadMoreButton.addEventListener("click", () => {
+            if (window.showFavoritesOnly) {
+                window.displayAnimes();
+            } else {
+                const searchBar = document.getElementById("searchBar");
+                window.currentPage++;
+                window.fetchAnimes(searchBar ? searchBar.value : "", window.currentPage);
+            }
+        });
+    }
     
-    // Supprimer le carousel s'il existe (comme dans le script d'origine)
-    const carousel = document.querySelector(".carousel-container");
-    if (carousel) carousel.remove();
+    // Vérifier le chemin courant pour déterminer quelle page est chargée
+    const isOnFavoritesPage = window.location.pathname.includes("favoris.html");
     
-    // Charger les animes et initialiser l'affichage
-    window.fetchAnimes();
-    window.updateFavoritesCount();
+    if (isOnFavoritesPage) {
+        // Sur la page des favoris
+        window.showFavoritesOnly = true;
+        if (window.updateFavoritesCount) window.updateFavoritesCount();
+        window.fetchAnimes();
+    } else {
+        // Sur la page principale
+        window.fetchAnimes();
+        if (window.updateFavoritesCount) window.updateFavoritesCount();
+    }
 });

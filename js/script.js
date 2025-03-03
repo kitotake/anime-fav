@@ -1,6 +1,4 @@
-// Fichier principal - Initialisation et coordination
 
-// Variables globales
 let currentPage = 1;
 
 document.addEventListener("DOMContentLoaded", () => {
