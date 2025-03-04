@@ -1,54 +1,94 @@
-(function () {
-    "use strict";
+document.addEventListener("DOMContentLoaded", () => {
+    window.initFavorites(); // Initialisation des favoris avec Cookies
+});
 
-    window.favorites = new Set();
-    window.showFavoritesOnly = false;
+window.initFavorites = function () {
+    let storedFavorites = JSON.parse(window.Cookies.get("favorites") || "[]");
 
-    window.initFavorites = function() {
-        const favorites = Cookies.get("favorites");
-        if (favorites && Array.isArray(favorites)) {
-            window.favorites = new Set(favorites);
-        } else {
-            window.favorites = new Set();
-        }
-        window.updateFavoritesCount();
-    };
+    // ✅ S'assurer que storedFavorites est un tableau
+    if (!Array.isArray(storedFavorites)) {
+        storedFavorites = [];
+    }
 
-    window.toggleFavoritesView = function() {
-        window.showFavoritesOnly = !window.showFavoritesOnly;
-        const favoritesButton = document.getElementById("favoritesButton");
+    window.favorites = new Set(storedFavorites.map(String)); // 🔥 Convertir en string pour cohérence
+    window.updateFavoritesCount();
+    window.displayFavoriteAnimes();
+};
 
-        if (favoritesButton) {
-            favoritesButton.textContent = window.showFavoritesOnly
-                ? `Voir Tous (${window.favorites.size} favoris)`
-                : "Voir Favoris";
-        }
-    };
 
-    window.toggleFavorite = function(animeId, buttonElement) {
-        animeId = String(animeId);
+window.saveFavorites = function () {
+    window.Cookies.set("favorites", JSON.stringify([...window.favorites]), { days: 30 });
+};
 
-        if (window.favorites.has(animeId)) {
-            window.favorites.delete(animeId);
-            if(buttonElement) buttonElement.textContent = "Ajouter aux Favoris";
-        } else {
-            window.favorites.add(animeId);
-            if(buttonElement) buttonElement.textContent = "Retirer des Favoris";
-        }
+window.toggleFavorite = function (animeId, buttonElement) {
+    animeId = String(animeId);
+    
+    if (window.favorites.has(animeId)) {
+        window.favorites.delete(animeId);
+        buttonElement.src = "../assets/img/heart-filled.png";
+        buttonElement.title = "Ajouter aux favoris";
+    } else {
+        window.favorites.add(animeId);
+        buttonElement.src = "../assets/img/check.png";
+        buttonElement.title = "Retirer des favoris";
+    }
+    
+    window.saveFavorites();
+    window.updateFavoritesCount();
+    window.displayFavoriteAnimes();
+    
+    if (window.showFavoritesOnly) {
+        window.displayAnimes();
+    }
+};
 
-        Cookies.set("favorites", Array.from(window.favorites), { days: 365 });
-        window.updateFavoritesCount();
+window.updateFavoritesCount = function () {
+    const count = window.favorites.size;
+    const favoritesCounter = document.getElementById("favoritesCount");
+    if (favoritesCounter) {
+        favoritesCounter.textContent = `Total Favoris : ${count}`;
+    }
+};
 
-        if (window.showFavoritesOnly)
-            window.displayAnimes();
-    };
+window.displayFavoriteAnimes = function () {
+    const animeFavori = document.getElementById("animeFavori");
+    if (!animeFavori) {
+        console.warn("⚠️ Avertissement: L'élément 'animeFavori' est introuvable !");
+        return;
+    }
 
-    window.updateFavoritesCount = function () {
-        const totalFavs = window.favorites.size;
-        const title = document.getElementById("favoritesCount");
 
-        if (title) {
-            title.textContent = `Total Favoris : ${totalFavs}`;
-        }
-    };
-})();
+    animeFavori.innerHTML = "";
+    let favoriteAnimes = window.allAnimes ? window.allAnimes.filter(anime => window.favorites.has(String(anime.id))) : [];
+    
+    if (favoriteAnimes.length === 0) {
+        animeFavori.innerHTML = `<p>⭐ Aucun favori enregistré.</p>`;
+        return;
+    }
+
+    favoriteAnimes.forEach(anime => {
+        const { id, name, first_air_date, poster_path } = anime;
+        const animeCard = document.createElement("div");
+        animeCard.classList.add("anime-card");
+        animeCard.innerHTML = `
+            <div class="card-container">
+                <div class="poster">
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.png'}" alt="${name}">
+                </div>
+                <div class="card-buttons">
+                    <img class="favorite-icon" src="../assets/img/check.png"
+                        data-id="${id}" title="Retirer des favoris">
+                </div>
+                <div class="card-info">
+                    <h3 class="anime-title">${name}</h3>
+                    <p class="anime-year"><strong>Année :</strong> ${first_air_date ? first_air_date.split("-")[0] : "Inconnue"}</p>
+                </div>
+            </div>
+        `;
+        animeFavori.appendChild(animeCard);
+    });
+
+    document.querySelectorAll("#animeFavori .favorite-icon").forEach(button => {
+        button.addEventListener("click", (event) => window.toggleFavorite(event.target.dataset.id, event.target));
+    });
+};

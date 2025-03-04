@@ -25,7 +25,7 @@
                 secure: false,
                 sameSite: "lax"
             };
-            const mergedOptions = {...defaultOptions, ...options};
+            const mergedOptions = { ...defaultOptions, ...options };
             const expires = new Date(Date.now() + mergedOptions.days * 24 * 60 * 60 * 1000);
             let cookieString = `${name}=${encodeURIComponent(JSON.stringify(value))}; expires=${expires.toUTCString()}; path=${mergedOptions.path}; sameSite=${mergedOptions.sameSite}`;
 
@@ -37,10 +37,8 @@
             document.cookie = cookieString;
         },
 
-        delete: function (name, options = {path: "/"}) {
-            this.set(name, "", {...options, days: -1});
+        delete: function (name, options = { path: "/" }) {
+            this.set(name, "", { ...options, days: -1 });
         }
     };
-
-    console.log("Cookies.js chargé !");
 })();

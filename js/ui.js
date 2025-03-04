@@ -32,21 +32,28 @@ window.displayAnimes = function() {
         const animeCard = document.createElement("div");
         animeCard.classList.add("anime-card");
         animeCard.innerHTML = `
+             <div class="anime-card">
             <div class="card-container">
                 <div class="poster">
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : './assets/img/placeholder.png'}" alt="${name}">
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.png'}" alt="${name}">
+                </div>
+                <div class="card-buttons">
+                    <img class="favorite-icon" src="../assets/img/${isFavorite ? 'check.png' : 'heart-filled.png'}"
+                        data-id="${id}" title="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+                    <img class="info-icon" src="../assets/img/info.png"
+                        data-id="${id}" title="Voir plus d'infos">
                 </div>
                 <div class="card-info">
-                    <h3>${name}</h3>
-                    <p><strong>Année :</strong> ${first_air_date ? first_air_date.split("-")[0] : "Inconnue"}</p>
-                    <button class="favorite-btn" data-id="${id}">${isFavorite ? "Retirer des Favoris" : "Ajouter aux Favoris"}</button>
+                    <h3 class="anime-title">${name}</h3>
+                    <p class="anime-year"><strong>Année :</strong> ${first_air_date ? first_air_date.split("-")[0] : "Inconnue"}</p>
                 </div>
             </div>
-        `;
+        </div>
+    `;
         animeList.appendChild(animeCard);
     });
     
-    document.querySelectorAll(".favorite-btn").forEach(button => {
+    document.querySelectorAll(".favorite-icon").forEach(button => {
         button.addEventListener("click", (event) => window.toggleFavorite(event.target.dataset.id, event.target));
     });
 };
