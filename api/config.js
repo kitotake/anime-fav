@@ -8,13 +8,9 @@ console.log("✅ Vérification des scripts chargés :");
 console.log("➡️ config.js chargé !");
 
 
-
-
 console.log("API_KEY:", window.API_KEY);
 console.log("BASE_URL:", window.BASE_URL);
 console.log("IMAGE_BASE_URL:", window.IMAGE_BASE_URL);
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("➡️ Le DOM est entièrement chargé !");

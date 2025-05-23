@@ -1,4 +1,4 @@
-// 📜 Gestion des animés
+// 📜 Gestion des animés - Version corrigée
 
 let currentPage = 1;
 let allAnimes = [];
@@ -29,21 +29,26 @@ async function fetchAnimes({ query = "", page = 1, year = "", category = "" } = 
             url = `${window.BASE_URL}/search/tv?${params}`;
         }
 
-    //    console.log("🔗 URL de l'API :", url); // Vérification de l'URL générée
-//
         const response = await fetch(url);
-     //   console.log("📡 Statut de la réponse :", response.status); // Vérifie si 200 ou erreur
 
         if (!response.ok) throw new Error(`Erreur réseau ${response.status}`);
 
         const data = await response.json();
-   //     console.log("📦 Données reçues :", data); // Affiche les données retournées
 
         if (!data.results || data.results.length === 0) {
             throw new Error("Aucun anime trouvé !");
         }
 
-        allAnimes = page === 1 ? data.results : [...allAnimes, ...data.results];
+        // ✅ Correction: Réinitialiser allAnimes pour page 1, sinon concaténer
+        if (page === 1) {
+            allAnimes = data.results;
+        } else {
+            allAnimes = [...allAnimes, ...data.results];
+        }
+        
+        // ✅ Mise à jour de la page courante
+        currentPage = page;
+        
         displayAnimes();
 
         // Afficher / cacher le bouton "Voir plus"
@@ -76,6 +81,11 @@ function displayAnimes() {
 
     animeList.innerHTML = ""; // Réinitialisation
 
+    // ✅ Correction: S'assurer que favorites existe
+    if (!window.favorites) {
+        window.favorites = new Set();
+    }
+
     const animesToDisplay = window.showFavoritesOnly
         ? allAnimes.filter(anime => window.favorites.has(String(anime.id)))
         : allAnimes;
@@ -87,38 +97,64 @@ function displayAnimes() {
 
     animeList.innerHTML = animesToDisplay.map(anime => createAnimeCard(anime)).join("");
 
-    // Ajouter les événements après le rendu
+    // ✅ Correction: Ajouter les événements après le rendu
+    addCardEventListeners();
+    
+    // ✅ Mise à jour du compteur de favoris
+    if (window.updateFavoritesCount) {
+        window.updateFavoritesCount();
+    }
+}
+
+// 📌 Ajout des événements sur les cartes
+function addCardEventListeners() {
     document.querySelectorAll(".favorite-icon").forEach(button => {
         button.addEventListener("click", (event) => {
-            window.toggleFavorite(event.target.dataset.id, event.target);
+            event.preventDefault();
+            event.stopPropagation();
+            if (window.toggleFavorite) {
+                window.toggleFavorite(event.target.dataset.id, event.target);
+            }
         });
     });
 
     document.querySelectorAll(".info-icon").forEach(button => {
         button.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
             openModal(event.target.dataset.id);
         });
     });
-
-    window.updateFavoritesCount();
 }
 
 // 📌 Création d'une carte d'anime
 function createAnimeCard(anime) {
     const { id, name, first_air_date, poster_path } = anime;
+    
+    // ✅ Correction: S'assurer que favorites existe
+    if (!window.favorites) {
+        window.favorites = new Set();
+    }
+    
     const isFavorite = window.favorites.has(String(id));
 
     return `
         <div class="anime-card">
             <div class="card-container">
                 <div class="poster">
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.png'}" alt="${name}">
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" 
+                         alt="${name}" 
+                         onerror="this.src='../assets/img/placeholder.svg'">
                 </div>
                 <div class="card-buttons">
-                    <img class="favorite-icon" src="../assets/img/${isFavorite ? 'check.png' : 'heart-filled.png'}"
-                        data-id="${id}" title="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
-                    <img class="info-icon" src="../assets/img/info.png"
-                        data-id="${id}" title="Voir plus d'infos">
+                    <img class="favorite-icon" 
+                         src="../assets/img/${isFavorite ? 'check.svg' : 'heart-filled.svg'}"
+                         data-id="${id}" 
+                         title="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+                    <img class="info-icon" 
+                         src="../assets/img/info.svg"
+                         data-id="${id}" 
+                         title="Voir plus d'infos">
                 </div>
                 <div class="card-info">
                     <h3 class="anime-title">${name}</h3>
@@ -133,7 +169,7 @@ function createAnimeCard(anime) {
 function showError(message) {
     const animeList = document.getElementById("animeList");
     if (animeList) {
-        animeList.innerHTML = `<p>${message}</p>`;
+        animeList.innerHTML = `<p class="error-message">${message}</p>`;
     }
 }
 
@@ -143,33 +179,52 @@ async function openModal(animeId) {
     if (!modal) return;
 
     modal.style.display = "flex";
-    document.getElementById("animeTitle").textContent = "Chargement...";
-    document.getElementById("animeDescription").textContent = "Chargement des informations...";
+    
+    // ✅ Éléments de la modale avec vérification d'existence
+    const titleElement = document.getElementById("animeTitle");
+    const descriptionElement = document.getElementById("animeDescription");
+    const dateElement = document.getElementById("animeDate");
+    const ratingElement = document.getElementById("animeRating");
+    const genresElement = document.getElementById("animeGenres");
+    const imageElement = document.getElementById("animeImage");
+
+    if (titleElement) titleElement.textContent = "Chargement...";
+    if (descriptionElement) descriptionElement.textContent = "Chargement des informations...";
 
     const animeDetails = await fetchAnimeDetails(animeId);
 
     if (animeDetails) {
-        document.getElementById("animeTitle").textContent = animeDetails.name;
-        document.getElementById("animeDate").textContent = `Première diffusion : ${animeDetails.first_air_date || "Inconnue"}`;
-        document.getElementById("animeRating").textContent = `Note : ${animeDetails.vote_average}/10`;
+        if (titleElement) titleElement.textContent = animeDetails.name;
+        if (dateElement) dateElement.textContent = `Première diffusion : ${animeDetails.first_air_date || "Inconnue"}`;
+        if (ratingElement) ratingElement.textContent = `Note : ${animeDetails.vote_average}/10`;
 
-        const genres = animeDetails.genres.map(genre => genre.name).join(", ");
-        document.getElementById("animeGenres").textContent = `Genres : ${genres || "Non spécifiés"}`;
+        const genres = animeDetails.genres?.map(genre => genre.name).join(", ") || "Non spécifiés";
+        if (genresElement) genresElement.textContent = `Genres : ${genres}`;
 
-        document.getElementById("animeImage").src = animeDetails.poster_path
-            ? window.IMAGE_BASE_URL + animeDetails.poster_path
-            : '../assets/img/placeholder.png';
+        if (imageElement) {
+            imageElement.src = animeDetails.poster_path
+                ? window.IMAGE_BASE_URL + animeDetails.poster_path
+                : '../assets/img/placeholder.svg';
+            imageElement.onerror = () => imageElement.src = '../assets/img/placeholder.svg';
+        }
 
-        document.getElementById("animeDescription").textContent = animeDetails.overview || "Aucune description disponible.";
+        if (descriptionElement) {
+            descriptionElement.textContent = animeDetails.overview || "Aucune description disponible.";
+        }
     } else {
-        document.getElementById("animeTitle").textContent = "Erreur";
-        document.getElementById("animeDescription").textContent = "Impossible de charger les détails de l'anime.";
+        if (titleElement) titleElement.textContent = "Erreur";
+        if (descriptionElement) descriptionElement.textContent = "Impossible de charger les détails de l'anime.";
     }
 
-    document.querySelector(".close").onclick = () => {
-        modal.style.display = "none";
-    };
+    // ✅ Gestion de la fermeture de la modale
+    const closeButton = document.querySelector(".close");
+    if (closeButton) {
+        closeButton.onclick = () => {
+            modal.style.display = "none";
+        };
+    }
 
+    // ✅ Fermeture en cliquant à l'extérieur
     window.onclick = (event) => {
         if (event.target === modal) {
             modal.style.display = "none";
@@ -177,14 +232,22 @@ async function openModal(animeId) {
     };
 }
 
-// 📌 Initialisation des favoris et affichage des animes au chargement
+// 📌 Initialisation au chargement du DOM
 document.addEventListener("DOMContentLoaded", () => {
-  //  console.log("🚀 DOM chargé, récupération des animes...");
-    window.fetchAnimes();
+    // ✅ Initialisation des variables globales
+    window.currentPage = 1;
+    window.showFavoritesOnly = false;
+    
+    // ✅ Chargement initial des animes seulement si on n'est pas sur la page favoris
+    if (!document.getElementById("animeFavori")) {
+        fetchAnimes();
+    }
 });
 
 // 📌 Exporter les fonctions globalement
 window.fetchAnimes = fetchAnimes;
 window.displayAnimes = displayAnimes;
 window.openModal = openModal;
-window.allAnimes = allAnimes;
+window.addCardEventListeners = addCardEventListeners;
+window.allAnimes = () => allAnimes;
+window.currentPage = currentPage;
