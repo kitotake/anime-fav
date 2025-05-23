@@ -25,11 +25,11 @@ window.toggleFavorite = function (animeId, buttonElement) {
     
     if (window.favorites.has(animeId)) {
         window.favorites.delete(animeId);
-        buttonElement.src = "../assets/img/heart-filled.png";
+        buttonElement.src = "../assets/img/heart-filled.svg";
         buttonElement.title = "Ajouter aux favoris";
     } else {
         window.favorites.add(animeId);
-        buttonElement.src = "../assets/img/check.png";
+        buttonElement.src = "../assets/img/check.svg";
         buttonElement.title = "Retirer des favoris";
     }
     
@@ -73,10 +73,10 @@ window.displayFavoriteAnimes = function () {
         animeCard.innerHTML = `
             <div class="card-container">
                 <div class="poster">
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.png'}" alt="${name}">
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" alt="${name}">
                 </div>
                 <div class="card-buttons">
-                    <img class="favorite-icon" src="../assets/img/check.png"
+                    <img class="favorite-icon" src="../assets/img/check.svg"
                         data-id="${id}" title="Retirer des favoris">
                 </div>
                 <div class="card-info">

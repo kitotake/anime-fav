@@ -112,12 +112,12 @@ function createAnimeCard(anime) {
         <div class="anime-card">
             <div class="card-container">
                 <div class="poster">
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.png'}" alt="${name}">
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" alt="${name}">
                 </div>
                 <div class="card-buttons">
-                    <img class="favorite-icon" src="../assets/img/${isFavorite ? 'check.png' : 'heart-filled.png'}"
+                    <img class="favorite-icon" src="../assets/img/${isFavorite ? 'check.svg' : 'heart-filled.svg'}"
                         data-id="${id}" title="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
-                    <img class="info-icon" src="../assets/img/info.png"
+                    <img class="info-icon" src="../assets/img/info.svg"
                         data-id="${id}" title="Voir plus d'infos">
                 </div>
                 <div class="card-info">
@@ -158,7 +158,7 @@ async function openModal(animeId) {
 
         document.getElementById("animeImage").src = animeDetails.poster_path
             ? window.IMAGE_BASE_URL + animeDetails.poster_path
-            : '../assets/img/placeholder.png';
+            : '../assets/img/placeholder.svg';
 
         document.getElementById("animeDescription").textContent = animeDetails.overview || "Aucune description disponible.";
     } else {

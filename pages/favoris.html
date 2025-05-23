@@ -36,8 +36,27 @@
     <h1 id="favoritesCount">Total Favoris : 0</h1>
   
     <div class="container" id="animeFavori"></div>
-    
+
     <button id="loadMore">Voir plus</button>
+
+    <!-- Modale pour afficher les détails d'un anime -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="animeTitle"></h2>
+            <p id="animeDate"></p>
+            <p id="animeRating"></p>
+            <p id="animeGenres"></p>
+            <img id="animeImage" src="" alt="Affiche de l'anime">
+            
+            <!-- Nouvelle boîte pour la description -->
+            <div class="modal-description">
+                <h3>Description</h3>
+                <p id="animeDescription"></p>
+            </div>
+        </div>
+    </div>
+
 
 <!-- Scripts -->
 <script src="../api/config.js"></script>
