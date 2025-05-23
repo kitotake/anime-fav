@@ -1,68 +1,58 @@
-// 📜 Gestion des animés - Version corrigée
+// 📜 Gestion des animés - Version corrigée et optimisée
 
 let currentPage = 1;
 let allAnimes = [];
 
-// 📌 Récupération des animes avec filtres (query, année, catégorie)
-async function fetchAnimes({ query = "", page = 1, year = "", category = "" } = {}) {
+// 📌 Récupération des animes avec filtres
+async function fetchAnimes({ query = "", page = 1, year = "", category = "16" } = {}) {
     try {
         const params = new URLSearchParams({
             api_key: window.API_KEY,
-            with_genres: "16",  // S'assure que "16" (Anime) est toujours présent
             with_origin_country: "JP",
             page
         });
 
+        // Année de sortie
         if (year) {
             params.append("first_air_date.gte", `${year}-01-01`);
             params.append("first_air_date.lte", `${year}-12-31`);
         }
 
-        if (category && category !== "16") {
-            params.set("with_genres", category);
-        }
-
-        let url = `${window.BASE_URL}/discover/tv?${params}`;
-
+        let url;
         if (query.trim()) {
             params.set("query", query);
             url = `${window.BASE_URL}/search/tv?${params}`;
+        } else {
+            // Toujours inclure le genre "16" (anime) sauf si autre spécifié
+            const genre = category !== "16" ? category : "16";
+            params.set("with_genres", genre);
+            url = `${window.BASE_URL}/discover/tv?${params}`;
         }
 
         const response = await fetch(url);
-
         if (!response.ok) throw new Error(`Erreur réseau ${response.status}`);
 
         const data = await response.json();
-
         if (!data.results || data.results.length === 0) {
             throw new Error("Aucun anime trouvé !");
         }
 
-        // ✅ Correction: Réinitialiser allAnimes pour page 1, sinon concaténer
-        if (page === 1) {
-            allAnimes = data.results;
-        } else {
-            allAnimes = [...allAnimes, ...data.results];
-        }
-        
-        // ✅ Mise à jour de la page courante
+        allAnimes = page === 1 ? data.results : [...allAnimes, ...data.results];
         currentPage = page;
-        
         displayAnimes();
 
-        // Afficher / cacher le bouton "Voir plus"
         const loadMoreButton = document.getElementById("loadMore");
         if (loadMoreButton) {
             loadMoreButton.style.display = page < data.total_pages ? "block" : "none";
         }
+
     } catch (error) {
         console.error("❌ Erreur lors de la récupération des animes :", error);
         showError(error.message || "Une erreur est survenue.");
     }
 }
 
-// 📌 Récupérer les détails d'un anime
+// 📌 Détails d’un anime
 async function fetchAnimeDetails(animeId) {
     try {
         const response = await fetch(`${window.BASE_URL}/tv/${animeId}?api_key=${window.API_KEY}&language=fr-FR`);
@@ -79,12 +69,9 @@ function displayAnimes() {
     const animeList = document.getElementById("animeList");
     if (!animeList) return;
 
-    animeList.innerHTML = ""; // Réinitialisation
+    animeList.innerHTML = "";
 
-    // ✅ Correction: S'assurer que favorites existe
-    if (!window.favorites) {
-        window.favorites = new Set();
-    }
+    if (!window.favorites) window.favorites = new Set();
 
     const animesToDisplay = window.showFavoritesOnly
         ? allAnimes.filter(anime => window.favorites.has(String(anime.id)))
@@ -96,11 +83,8 @@ function displayAnimes() {
     }
 
     animeList.innerHTML = animesToDisplay.map(anime => createAnimeCard(anime)).join("");
-
-    // ✅ Correction: Ajouter les événements après le rendu
     addCardEventListeners();
-    
-    // ✅ Mise à jour du compteur de favoris
+
     if (window.updateFavoritesCount) {
         window.updateFavoritesCount();
     }
@@ -127,24 +111,19 @@ function addCardEventListeners() {
     });
 }
 
-// 📌 Création d'une carte d'anime
+// 📌 Création d’une carte d’anime
 function createAnimeCard(anime) {
     const { id, name, first_air_date, poster_path } = anime;
-    
-    // ✅ Correction: S'assurer que favorites existe
-    if (!window.favorites) {
-        window.favorites = new Set();
-    }
-    
+    if (!window.favorites) window.favorites = new Set();
+
     const isFavorite = window.favorites.has(String(id));
+    const imageUrl = poster_path ? `${window.IMAGE_BASE_URL}${poster_path}` : "../assets/img/placeholder.svg";
 
     return `
         <div class="anime-card">
             <div class="card-container">
                 <div class="poster">
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" 
-                         alt="${name}" 
-                         onerror="this.src='../assets/img/placeholder.svg'">
+                    <img src="${imageUrl}" alt="${name}" onerror="this.src='../assets/img/placeholder.svg'">
                 </div>
                 <div class="card-buttons">
                     <img class="favorite-icon" 
@@ -165,7 +144,7 @@ function createAnimeCard(anime) {
     `;
 }
 
-// 📌 Affichage d'un message d'erreur
+// 📌 Affichage d’un message d’erreur
 function showError(message) {
     const animeList = document.getElementById("animeList");
     if (animeList) {
@@ -173,14 +152,13 @@ function showError(message) {
     }
 }
 
-// 📌 Ouvrir la modale avec les détails de l'anime
+// 📌 Modale détails d’un anime
 async function openModal(animeId) {
     const modal = document.getElementById("modal");
     if (!modal) return;
 
     modal.style.display = "flex";
-    
-    // ✅ Éléments de la modale avec vérification d'existence
+
     const titleElement = document.getElementById("animeTitle");
     const descriptionElement = document.getElementById("animeDescription");
     const dateElement = document.getElementById("animeDate");
@@ -198,14 +176,14 @@ async function openModal(animeId) {
         if (dateElement) dateElement.textContent = `Première diffusion : ${animeDetails.first_air_date || "Inconnue"}`;
         if (ratingElement) ratingElement.textContent = `Note : ${animeDetails.vote_average}/10`;
 
-        const genres = animeDetails.genres?.map(genre => genre.name).join(", ") || "Non spécifiés";
+        const genres = animeDetails.genres?.map(g => g.name).join(", ") || "Non spécifiés";
         if (genresElement) genresElement.textContent = `Genres : ${genres}`;
 
         if (imageElement) {
             imageElement.src = animeDetails.poster_path
-                ? window.IMAGE_BASE_URL + animeDetails.poster_path
-                : '../assets/img/placeholder.svg';
-            imageElement.onerror = () => imageElement.src = '../assets/img/placeholder.svg';
+                ? `${window.IMAGE_BASE_URL}${animeDetails.poster_path}`
+                : "../assets/img/placeholder.svg";
+            imageElement.onerror = () => imageElement.src = "../assets/img/placeholder.svg";
         }
 
         if (descriptionElement) {
@@ -216,35 +194,26 @@ async function openModal(animeId) {
         if (descriptionElement) descriptionElement.textContent = "Impossible de charger les détails de l'anime.";
     }
 
-    // ✅ Gestion de la fermeture de la modale
     const closeButton = document.querySelector(".close");
     if (closeButton) {
-        closeButton.onclick = () => {
-            modal.style.display = "none";
-        };
+        closeButton.onclick = () => modal.style.display = "none";
     }
 
-    // ✅ Fermeture en cliquant à l'extérieur
     window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
+        if (event.target === modal) modal.style.display = "none";
     };
 }
 
-// 📌 Initialisation au chargement du DOM
+// 📌 Initialisation au chargement
 document.addEventListener("DOMContentLoaded", () => {
-    // ✅ Initialisation des variables globales
     window.currentPage = 1;
     window.showFavoritesOnly = false;
-    
-    // ✅ Chargement initial des animes seulement si on n'est pas sur la page favoris
     if (!document.getElementById("animeFavori")) {
         fetchAnimes();
     }
 });
 
-// 📌 Exporter les fonctions globalement
+// 📌 Exports globaux
 window.fetchAnimes = fetchAnimes;
 window.displayAnimes = displayAnimes;
 window.openModal = openModal;

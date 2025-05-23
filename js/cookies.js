@@ -1,43 +1,46 @@
+// cookies.js
 (function () {
     "use strict";
 
     window.Cookies = {
-        get: function (name) {
+        get(name) {
             const cookies = document.cookie.split('; ');
-            const cookie = cookies.find(cookie => cookie.startsWith(`${name}=`));
+            const cookie = cookies.find(c => c.startsWith(`${name}=`));
 
             if (cookie) {
                 try {
                     return JSON.parse(decodeURIComponent(cookie.split('=')[1]));
                 } catch (error) {
-                    console.error(`Erreur lors de l'analyse du cookie JSON : ${error.message}`)
+                    console.error(`❌ Erreur d'analyse JSON du cookie "${name}" : ${error.message}`);
                     return null;
                 }
             }
             return null;
         },
 
-        set: function (name, value, options = {}) {
+        set(name, value, options = {}) {
             const defaultOptions = {
                 days: 365,
                 path: "/",
                 domain: null,
-                secure: false,
-                sameSite: "lax"
+                secure: window.location.protocol === "https:",
+                sameSite: "Lax"
             };
-            const mergedOptions = { ...defaultOptions, ...options };
-            const expires = new Date(Date.now() + mergedOptions.days * 24 * 60 * 60 * 1000);
-            let cookieString = `${name}=${encodeURIComponent(JSON.stringify(value))}; expires=${expires.toUTCString()}; path=${mergedOptions.path}; sameSite=${mergedOptions.sameSite}`;
+            const opts = { ...defaultOptions, ...options };
 
-            if (mergedOptions.domain)
-                cookieString += `; domain=${mergedOptions.domain}`;
-            if (mergedOptions.secure)
-                cookieString += '; secure';
+            const expiresDate = new Date(Date.now() + opts.days * 864e5); // 864e5 = 24*60*60*1000
+            let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(JSON.stringify(value))}`;
+            cookie += `; expires=${expiresDate.toUTCString()}`;
+            cookie += `; path=${opts.path}`;
+            cookie += `; sameSite=${opts.sameSite}`;
 
-            document.cookie = cookieString;
+            if (opts.domain) cookie += `; domain=${opts.domain}`;
+            if (opts.secure) cookie += `; secure`;
+
+            document.cookie = cookie;
         },
 
-        delete: function (name, options = { path: "/" }) {
+        delete(name, options = {}) {
             this.set(name, "", { ...options, days: -1 });
         }
     };

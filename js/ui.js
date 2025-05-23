@@ -1,8 +1,6 @@
-// Gestion de l'affichage des animes
-
-// Chargement des SVGs
 window.svgIcons = {};
 
+// 🔄 Chargement asynchrone des icônes SVG
 window.loadSVGs = async function () {
     const iconNames = ['cancel', 'check', 'heart-filled', 'info', 'placeholder'];
     const basePath = '../assets/img/';
@@ -21,27 +19,32 @@ window.loadSVGs = async function () {
     await Promise.all(fetches);
 };
 
-// Initialisation de l'UI
+// 🛠 Initialisation de l'UI
 window.initUI = function () {
     const animeList = document.getElementById("animeList");
     if (!animeList) {
-        console.error("❌ Erreur: L'élément 'animeList' est introuvable!");
+        console.warn("⚠️ L'élément 'animeList' est introuvable (peut être normal sur certaines pages)");
     }
 };
 
-// Fonction pour afficher les animes
+// 🎞 Affichage des animes (favoris ou tous selon le contexte)
 window.displayAnimes = function () {
     const animeList = document.getElementById("animeList");
     if (!animeList) return;
 
     animeList.innerHTML = "";
 
-    let animesToDisplay = window.showFavoritesOnly
+    if (!window.allAnimes || !Array.isArray(window.allAnimes)) {
+        animeList.innerHTML = `<p class="info-message">⏳ Chargement des données...</p>`;
+        return;
+    }
+
+    const animesToDisplay = window.showFavoritesOnly
         ? window.allAnimes.filter(anime => window.favorites.has(String(anime.id)))
         : window.allAnimes;
 
     if (animesToDisplay.length === 0) {
-        animeList.innerHTML = `<p>${window.showFavoritesOnly ? "Aucun favori enregistré." : "Aucun résultat trouvé."}</p>`;
+        animeList.innerHTML = `<p class="info-message">${window.showFavoritesOnly ? "⭐ Aucun favori enregistré." : "🔍 Aucun résultat trouvé."}</p>`;
         return;
     }
 
@@ -53,7 +56,7 @@ window.displayAnimes = function () {
         animeCard.classList.add("anime-card");
 
         const posterHTML = poster_path
-            ? `<img src="${window.IMAGE_BASE_URL + poster_path}" alt="${name}">`
+            ? `<img src="${window.IMAGE_BASE_URL + poster_path}" alt="${name}" onerror="this.src='../assets/img/placeholder.svg'">`
             : window.svgIcons['placeholder'];
 
         animeCard.innerHTML = `
@@ -77,14 +80,27 @@ window.displayAnimes = function () {
         animeList.appendChild(animeCard);
     });
 
+    // ✅ Événements interactifs
     document.querySelectorAll(".favorite-icon").forEach(button => {
-        button.addEventListener("click", (event) => window.toggleFavorite(event.currentTarget.dataset.id, event.currentTarget));
+        button.addEventListener("click", (event) => {
+            const target = event.currentTarget;
+            window.toggleFavorite(target.dataset.id, target);
+        });
     });
+
+    document.querySelectorAll(".info-icon").forEach(button => {
+        button.addEventListener("click", (event) => {
+            const target = event.currentTarget;
+            if (window.openModal) window.openModal(target.dataset.id);
+        });
+    });
+
+    console.log(`✅ ${animesToDisplay.length} animes affichés`);
 };
 
-// Initialisation après chargement du DOM
-window.addEventListener("DOMContentLoaded", async () => {
-    await window.loadSVGs();
+// 🔁 Initialisation automatique après chargement du DOM
+document.addEventListener("DOMContentLoaded", async () => {
+    await window.loadSVGs(); // Charger les SVG avant tout
     window.initUI();
-    window.displayAnimes();
+    if (window.allAnimes) window.displayAnimes(); // Ne pas afficher si les données ne sont pas prêtes
 });

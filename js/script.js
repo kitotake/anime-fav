@@ -1,28 +1,38 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Initialiser tous les modules
-    initUI();
-    initSearch();
-    initFavorites();
-    
-    // Supprimer le carousel s'il existe (remplacé par swiper.js)
-    const carousel = document.querySelector(".carousel-container");
-    if (carousel) carousel.remove();
-    
-    // Charger les animes et initialiser l'affichage
-    fetchAnimes();
-    updateFavoritesCount();
-    
-    // Configurer le bouton "Charger Plus"
+    // ✅ Initialisation sécurisée des modules
+    window.initUI?.();
+    window.initSearch?.();
+    window.initFavorites?.();
+
+    // ✅ Supprimer le carousel (remplacé par swiper.js)
+    document.querySelector(".carousel-container")?.remove();
+
+    // ✅ Chargement initial des animes
+    window.fetchAnimes?.();
+
+    // ✅ Mise à jour du compteur de favoris
+    window.updateFavoritesCount?.();
+
+    // ✅ Bouton "Charger Plus"
     const loadMoreButton = document.getElementById("loadMore");
-    loadMoreButton.addEventListener("click", () => {
-        if (showFavoritesOnly) {
-            displayAnimes();
+    loadMoreButton?.addEventListener("click", () => {
+        if (window.showFavoritesOnly) {
+            window.displayAnimes?.();
         } else {
-            const searchBar = document.getElementById("searchBar");
-            currentPage++;
-            fetchAnimes(searchBar.value, currentPage);
+            window.currentPage = (window.currentPage || 1) + 1;
+
+            const filters = window.getCurrentFilters?.() || {
+                query: "",
+                year: "",
+                category: "16"
+            };
+
+            window.fetchAnimes?.({
+                query: filters.query,
+                year: filters.year,
+                category: filters.category,
+                page: window.currentPage
+            });
         }
     });
 });
-
-
