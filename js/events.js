@@ -1,114 +1,189 @@
-// events.js
-// 📜 Gestion des événements - Version améliorée
+// 📜 Gestion des événements globaux - VERSION CORRIGÉE
 
-// ✅ Initialiser les gestionnaires d'événements pour l'application
-window.addEventListeners = function () {
-    console.log("🎯 Initialisation des événements...");
+// 📌 Initialiser les gestionnaires d'événements pour l'application
+window.addEventListeners = function() {
+    console.log("🎯 Initialisation des événements globaux");
+    
+    // Bouton "Charger Plus"
+    initLoadMoreButton();
+    
+    // Événements de la modale
+    initModalEvents();
+    
+    // Événements des boutons de navigation
+    initNavigationEvents();
+    
+    console.log("✅ Événements globaux initialisés");
+};
 
-    // ✅ Bouton "Charger Plus"
+// 📌 Initialiser le bouton "Charger Plus"
+function initLoadMoreButton() {
     const loadMoreButton = document.getElementById("loadMore");
-    if (loadMoreButton) {
-        // Remplacer le bouton pour éviter les doublons d'événements
-        const newButton = loadMoreButton.cloneNode(true);
-        loadMoreButton.parentNode.replaceChild(newButton, loadMoreButton);
+    if (!loadMoreButton) {
+        console.warn("⚠️ Bouton 'loadMore' introuvable");
+        return;
+    }
 
-        newButton.addEventListener("click", () => {
-            console.log("🔄 Bouton 'Charger Plus' cliqué");
+    // Supprimer les anciens événements pour éviter les doublons
+    const newButton = loadMoreButton.cloneNode(true);
+    loadMoreButton.parentNode.replaceChild(newButton, loadMoreButton);
 
-            const currentFilters = window.getCurrentFilters?.() || {};
-            const query = document.getElementById("searchBar")?.value || currentFilters.query || "";
-
+    newButton.addEventListener("click", () => {
+        console.log("🔄 Clic sur 'Voir plus'");
+        
+        try {
+            // Si on est sur la page favoris, pas de pagination
             if (window.showFavoritesOnly) {
-                window.displayAnimes?.();
-            } else {
-                window.currentPage = (window.currentPage || 1) + 1;
-                window.fetchAnimes?.({
-                    query,
+                console.log("⭐ Page favoris - Pas de pagination");
+                return;
+            }
+
+            // Page principale - charger plus d'animes
+            if (window.fetchAnimes && window.currentPage !== undefined) {
+                window.currentPage++;
+                
+                const searchBar = document.getElementById("searchBar");
+                const yearSelect = document.getElementById("yearSelect");
+                
+                // Récupérer les filtres actuels
+                const currentFilters = {
+                    query: searchBar ? searchBar.value.trim() : "",
                     page: window.currentPage,
-                    year: currentFilters.year || "",
-                    category: currentFilters.category || "16"
-                });
+                    year: yearSelect ? yearSelect.value : "",
+                    category: getCurrentCategory()
+                };
+                
+                console.log("📄 Chargement page", window.currentPage, "avec filtres:", currentFilters);
+                
+                window.fetchAnimes(currentFilters);
+            } else {
+                console.warn("⚠️ Impossible de charger plus d'animes - fonction ou page manquante");
             }
+        } catch (error) {
+            console.error("❌ Erreur lors du chargement de plus d'animes:", error);
+        }
+    });
+    
+    console.log("✅ Bouton 'Charger Plus' initialisé");
+}
+
+// 📌 Obtenir la catégorie actuellement sélectionnée
+function getCurrentCategory() {
+    const activeButton = document.querySelector(".category-btn.active");
+    return activeButton ? activeButton.dataset.category : "16";
+}
+
+// 📌 Initialiser les événements de la modale
+function initModalEvents() {
+    const modal = document.getElementById("modal");
+    const closeButton = document.querySelector(".close");
+    
+    if (!modal) {
+        console.warn("⚠️ Modale introuvable");
+        return;
+    }
+
+    // Bouton de fermeture
+    if (closeButton) {
+        closeButton.addEventListener("click", () => {
+            console.log("❌ Fermeture modale via bouton");
+            modal.style.display = "none";
         });
-
-        console.log("✅ Bouton 'Charger Plus' configuré");
     }
 
-    // ✅ Bouton de retour
+    // Fermeture en cliquant à l'extérieur
+    window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            console.log("❌ Fermeture modale via clic extérieur");
+            modal.style.display = "none";
+        }
+    });
+
+    // Fermeture avec la touche Échap
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.style.display === "flex") {
+            console.log("❌ Fermeture modale via touche Échap");
+            modal.style.display = "none";
+        }
+    });
+    
+    console.log("✅ Événements modale initialisés");
+}
+
+// 📌 Initialiser les événements de navigation
+function initNavigationEvents() {
+    // Bouton Favoris (page principale)
+    const favoritesButton = document.getElementById("favoritesButton");
+    if (favoritesButton) {
+        favoritesButton.addEventListener("click", (e) => {
+            console.log("⭐ Navigation vers les favoris");
+            // Le lien <a> gère déjà la navigation
+        });
+    }
+
+    // Bouton Retour (page favoris)
     const backButton = document.getElementById("backButton");
-    backButton?.querySelector("a")?.addEventListener("click", (e) => {
-        console.log("🔙 Navigation :", e.currentTarget.href);
-    });
-
     if (backButton) {
-        console.log("✅ Bouton de retour configuré");
+        backButton.addEventListener("click", (e) => {
+            console.log("🏠 Navigation vers la page principale");
+            // Le lien <a> gère déjà la navigation
+        });
     }
+    
+    console.log("✅ Événements de navigation initialisés");
+}
 
-    // ✅ Gestion des erreurs d'image
-    document.addEventListener("error", (e) => {
-        if (e.target.tagName === "IMG") {
-            console.warn("⚠️ Erreur de chargement d'image :", e.target.src);
-            e.target.src = "../assets/img/placeholder.svg";
-        }
-    }, true);
-
-    console.log("✅ Gestionnaires d'événements initialisés");
-};
-
-// ✅ Fonction pour gérer les événements spécifiques à la page favoris
-window.initFavoritesPageEvents = function () {
-    console.log("📱 Initialisation des événements page favoris...");
-
-    const loadMoreButton = document.getElementById("loadMore");
-    loadMoreButton?.addEventListener("click", () => {
-        console.log("🔄 Rechargement des favoris");
-        window.displayFavoriteAnimes?.();
+// 📌 Gestionnaire global des erreurs JavaScript
+window.addEventListener("error", (event) => {
+    console.error("❌ Erreur JavaScript globale:", {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
     });
-
-    const yearSelect = document.getElementById("yearSelect");
-    yearSelect?.addEventListener("change", () => {
-        console.log("📅 Filtre année changé :", yearSelect.value);
-        window.displayFavoriteAnimes?.();
-    });
-
-    console.log("✅ Événements page favoris configurés");
-};
-
-// ✅ Fonction pour nettoyer les événements globaux
-window.cleanupEventListeners = function () {
-    console.log("🧹 Nettoyage des événements...");
-    window.onclick = null;
-    console.log("✅ Événements nettoyés");
-};
-
-// ✅ Initialisation après chargement du DOM
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 DOM chargé, initialisation des événements...");
-
-    const isHomePage = document.getElementById("animeList") && !document.getElementById("animeFavori");
-    const isFavoritesPage = document.getElementById("animeFavori");
-
-    if (isHomePage) {
-        console.log("🏠 Page d'accueil détectée");
-        window.showFavoritesOnly = false;
-        window.addEventListeners();
-    } else if (isFavoritesPage) {
-        console.log("⭐ Page favoris détectée");
-        window.showFavoritesOnly = true;
-        window.addEventListeners();
-        window.initFavoritesPageEvents();
-    }
-
-    // ✅ Fermeture modale avec Escape
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            const modal = document.getElementById("modal");
-            if (modal?.style.display === "flex") {
-                modal.style.display = "none";
-                console.log("🚪 Modale fermée avec Escape");
-            }
-        }
-    });
-
-    console.log("✅ Tous les événements sont configurés");
 });
+
+// 📌 Gestionnaire des promesses rejetées
+window.addEventListener("unhandledrejection", (event) => {
+    console.error("❌ Promise rejetée non gérée:", event.reason);
+});
+
+// 📌 Fonction utilitaire pour déboguer les événements
+window.debugEvents = function() {
+    const elements = {
+        loadMore: !!document.getElementById("loadMore"),
+        modal: !!document.getElementById("modal"),
+        closeButton: !!document.querySelector(".close"),
+        searchBar: !!document.getElementById("searchBar"),
+        yearSelect: !!document.getElementById("yearSelect"),
+        categoryButtons: document.querySelectorAll(".category-btn").length,
+        favoritesButton: !!document.getElementById("favoritesButton"),
+        backButton: !!document.getElementById("backButton")
+    };
+    
+    console.log("🐛 Debug événements:", elements);
+    return elements;
+};
+
+// 📌 Initialisation automatique sécurisée
+document.addEventListener("DOMContentLoaded", () => {
+    // Attendre un peu pour s'assurer que tous les éléments sont chargés
+    setTimeout(() => {
+        try {
+            if (typeof window.addEventListeners === 'function') {
+                window.addEventListeners();
+            } else {
+                console.warn("⚠️ Fonction addEventListeners non disponible");
+            }
+        } catch (error) {
+            console.error("❌ Erreur lors de l'initialisation des événements:", error);
+        }
+    }, 150);
+});
+
+// 📌 Réinitialisation des événements (utile pour le debug)
+window.reinitEvents = function() {
+    console.log("🔄 Réinitialisation des événements");
+    window.addEventListeners();
+};
