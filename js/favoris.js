@@ -24,7 +24,6 @@ window.initFavorites = function() {
             }
         }
 
-<<<<<<< HEAD
         // Convertir en Set avec des strings pour la cohérence
         window.favorites = new Set(favoritesArray.map(String));
         
@@ -42,37 +41,6 @@ window.initFavorites = function() {
     } catch (error) {
         console.error("❌ Erreur lors de l'initialisation des favoris :", error);
         window.favorites = new Set();
-=======
-    window.favorites = new Set(storedFavorites.map(String)); // 🔥 Convertir en string pour cohérence
-    window.updateFavoritesCount();
-    window.displayFavoriteAnimes();
-};
-
-
-window.saveFavorites = function () {
-    window.Cookies.set("favorites", JSON.stringify([...window.favorites]), { days: 30 });
-};
-
-window.toggleFavorite = function (animeId, buttonElement) {
-    animeId = String(animeId);
-    
-    if (window.favorites.has(animeId)) {
-        window.favorites.delete(animeId);
-        buttonElement.src = "../assets/img/heart-filled.svg";
-        buttonElement.title = "Ajouter aux favoris";
-    } else {
-        window.favorites.add(animeId);
-        buttonElement.src = "../assets/img/check.svg";
-        buttonElement.title = "Retirer des favoris";
-    }
-    
-    window.saveFavorites();
-    window.updateFavoritesCount();
-    window.displayFavoriteAnimes();
-    
-    if (window.showFavoritesOnly) {
-        window.displayAnimes();
->>>>>>> 859cdf2b9c233e8cbd573714b4c557c6f05ff825
     }
 };
 
@@ -203,7 +171,6 @@ function displayFavoriteAnimes(favoriteAnimes) {
         animeCard.innerHTML = `
             <div class="card-container">
                 <div class="poster">
-<<<<<<< HEAD
                     <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" 
                          alt="${name}" loading="lazy">
                 </div>
@@ -216,13 +183,6 @@ function displayFavoriteAnimes(favoriteAnimes) {
                          src="../assets/img/info.svg"
                          data-id="${id}" 
                          title="Voir plus d'infos">
-=======
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" alt="${name}">
-                </div>
-                <div class="card-buttons">
-                    <img class="favorite-icon" src="../assets/img/check.svg"
-                        data-id="${id}" title="Retirer des favoris">
->>>>>>> 859cdf2b9c233e8cbd573714b4c557c6f05ff825
                 </div>
                 <div class="card-info">
                     <h3 class="anime-title">${name}</h3>
