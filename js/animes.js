@@ -181,12 +181,34 @@ function getFavoriteIcon(isFavorite) {
         : '../assets/img/heart-filled.svg';
 }
 
+<<<<<<< HEAD
 function getInfoIcon() {
     return '../assets/img/info.svg';
 }
 
 function getPlaceholderImage() {
     return '../assets/img/placeholder.svg';
+=======
+    return `
+        <div class="anime-card">
+            <div class="card-container">
+                <div class="poster">
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" alt="${name}">
+                </div>
+                <div class="card-buttons">
+                    <img class="favorite-icon" src="../assets/img/${isFavorite ? 'check.svg' : 'heart-filled.svg'}"
+                        data-id="${id}" title="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+                    <img class="info-icon" src="../assets/img/info.svg"
+                        data-id="${id}" title="Voir plus d'infos">
+                </div>
+                <div class="card-info">
+                    <h3 class="anime-title">${name}</h3>
+                    <p class="anime-year"><strong>Année :</strong> ${first_air_date ? first_air_date.split("-")[0] : "Inconnue"}</p>
+                </div>
+            </div>
+        </div>
+    `;
+>>>>>>> 859cdf2b9c233e8cbd573714b4c557c6f05ff825
 }
 
 // 📌 Affichage d'un message d'erreur
@@ -239,9 +261,17 @@ async function openModal(animeId) {
                 : getPlaceholderImage();
         }
 
+<<<<<<< HEAD
         if (elements.description) {
             elements.description.textContent = animeDetails.overview || "Aucune description disponible.";
         }
+=======
+        document.getElementById("animeImage").src = animeDetails.poster_path
+            ? window.IMAGE_BASE_URL + animeDetails.poster_path
+            : '../assets/img/placeholder.svg';
+
+        document.getElementById("animeDescription").textContent = animeDetails.overview || "Aucune description disponible.";
+>>>>>>> 859cdf2b9c233e8cbd573714b4c557c6f05ff825
     } else {
         if (elements.title) elements.title.textContent = "Erreur";
         if (elements.description) elements.description.textContent = "Impossible de charger les détails de l'anime.";
