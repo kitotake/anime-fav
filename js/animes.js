@@ -177,16 +177,16 @@ function addCardEventListeners() {
 // 📌 Fonctions utilitaires pour les icônes
 function getFavoriteIcon(isFavorite) {
     return isFavorite 
-        ? '/docs/assets/img/check.svg'
-        : '/docs/assets/img/heart-filled.svg';
+        ? '/../assets/img/check.svg'
+        : '/../assets/img/heart-filled.svg';
 }
 
 function getInfoIcon() {
-    return '/docs/assets/img/info.svg';
+    return '/../assets/img/info.svg';
 }
 
 function getPlaceholderImage() {
-    return '/docs/assets/img/placeholder.svg';
+    return '/../assets/img/placeholder.svg';
 }
 
 // 📌 Affichage d'un message d'erreur
