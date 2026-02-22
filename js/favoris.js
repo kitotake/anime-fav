@@ -1,6 +1,5 @@
-// 📜 Gestion des favoris - VERSION CORRIGÉE
+// 📜 Gestion des favoris - VERSION CORRIGÉE v2
 
-// Variables globales pour les favoris
 window.favorites = new Set();
 
 // 📌 Initialisation des favoris
@@ -9,35 +8,23 @@ window.initFavorites = function () {
         const storedFavorites = window.Cookies ? window.Cookies.get("favorites") : null;
 
         let favoritesArray = [];
-
         if (storedFavorites) {
-            // S'assurer que c'est un tableau
             if (Array.isArray(storedFavorites)) {
                 favoritesArray = storedFavorites;
-            } else if (typeof storedFavorites === 'string') {
-                try {
-                    favoritesArray = JSON.parse(storedFavorites);
-                } catch (e) {
-                    console.warn("⚠️ Impossible de parser les favoris stockés");
-                    favoritesArray = [];
-                }
+            } else if (typeof storedFavorites === "string") {
+                try { favoritesArray = JSON.parse(storedFavorites); } catch (e) { favoritesArray = []; }
             }
         }
 
-        // Convertir en Set avec des strings pour la cohérence
         window.favorites = new Set(favoritesArray.map(String));
-
         console.log("✅ Favoris initialisés :", window.favorites.size, "éléments");
 
-        // Mettre à jour l'affichage
         updateFavoritesCount();
 
-        // Si on est sur la page favoris, charger les favoris
-        const animeFavori = document.getElementById("animeFavori");
-        if (animeFavori) {
-            loadAndDisplayFavorites();
+        // Sur la page favoris, charger l'affichage
+        if (document.getElementById("animeFavori")) {
+            window.loadAndDisplayFavorites();
         }
-
     } catch (error) {
         console.error("❌ Erreur lors de l'initialisation des favoris :", error);
         window.favorites = new Set();
@@ -48,9 +35,8 @@ window.initFavorites = function () {
 window.saveFavorites = function () {
     try {
         if (window.Cookies) {
-            const favoritesArray = Array.from(window.favorites);
-            window.Cookies.set("favorites", favoritesArray, { days: 365 });
-            console.log("✅ Favoris sauvegardés :", favoritesArray.length, "éléments");
+            window.Cookies.set("favorites", Array.from(window.favorites), { days: 365 });
+            console.log("✅ Favoris sauvegardés :", window.favorites.size, "éléments");
         }
     } catch (error) {
         console.error("❌ Erreur lors de la sauvegarde :", error);
@@ -63,97 +49,78 @@ window.toggleFavorite = function (animeId, buttonElement) {
         animeId = String(animeId);
 
         if (window.favorites.has(animeId)) {
-            // Retirer des favoris
             window.favorites.delete(animeId);
-            buttonElement.src = "./assets/img/heart-filled.svg";
-            buttonElement.title = "Ajouter aux favoris";
+            if (buttonElement) {
+                buttonElement.src = "./assets/img/heart-filled.svg";
+                buttonElement.title = "Ajouter aux favoris";
+            }
             console.log("➖ Retiré des favoris :", animeId);
         } else {
-            // Ajouter aux favoris
             window.favorites.add(animeId);
-            buttonElement.src = "./assets/img/check.svg";
-            buttonElement.title = "Retirer des favoris";
+            if (buttonElement) {
+                buttonElement.src = "./assets/img/check.svg";
+                buttonElement.title = "Retirer des favoris";
+            }
             console.log("➕ Ajouté aux favoris :", animeId);
         }
 
-        saveFavorites();
+        window.saveFavorites();
         updateFavoritesCount();
 
-        // Si on est sur la page favoris, actualiser l'affichage
-        const animeFavori = document.getElementById("animeFavori");
-        if (animeFavori) {
-            loadAndDisplayFavorites();
+        // Sur la page favoris : recharger la liste
+        if (document.getElementById("animeFavori")) {
+            window.loadAndDisplayFavorites();
         }
-
-        // Si showFavoritesOnly est activé (page favoris), rafraîchir la liste
-        if (window.showFavoritesOnly && window.displayAnimes) {
-            window.displayAnimes();
-        }
-
     } catch (error) {
         console.error("❌ Erreur lors du toggle favori :", error);
     }
 };
 
 // 📌 Mettre à jour le compteur de favoris
-window.updateFavoritesCount = function () {
+function updateFavoritesCount() {
     try {
-        const count = window.favorites.size;
         const favoritesCounter = document.getElementById("favoritesCount");
-
         if (favoritesCounter) {
-            favoritesCounter.textContent = `Total Favoris : ${count}`;
+            favoritesCounter.textContent = `Total Favoris : ${window.favorites.size}`;
         }
-
-        console.log("📊 Compteur mis à jour :", count, "favoris");
     } catch (error) {
         console.error("❌ Erreur mise à jour compteur :", error);
     }
-};
+}
+window.updateFavoritesCount = updateFavoritesCount;
 
-// 📌 Charger et afficher les favoris sur la page favoris
+// 📌 Charger et afficher les favoris (page favoris.html)
 window.loadAndDisplayFavorites = async function () {
     const animeFavori = document.getElementById("animeFavori");
     if (!animeFavori) return;
 
-    try {
-        if (window.favorites.size === 0) {
-            displayNoFavorites();
-            return;
-        }
-
-        // Affichage d'un message de chargement
-        animeFavori.innerHTML = `<p style="text-align: center; margin: 50px;">Chargement des favoris...</p>`;
-
-        const favoriteAnimes = [];
-        const favoriteIds = Array.from(window.favorites);
-
-        // Charger les détails de chaque anime favori
-        for (const animeId of favoriteIds) {
-            try {
-                const response = await fetch(`${window.BASE_URL}/tv/${animeId}?api_key=${window.API_KEY}&language=fr-FR`);
-
-                if (response.ok) {
-                    const animeDetails = await response.json();
-                    favoriteAnimes.push(animeDetails);
-                }
-            } catch (error) {
-                console.warn(`⚠️ Impossible de charger l'anime ${animeId}:`, error);
-            }
-        }
-
-        if (favoriteAnimes.length === 0) {
-            displayNoFavorites();
-            return;
-        }
-
-        // Afficher les favoris
-        displayFavoriteAnimes(favoriteAnimes);
-
-    } catch (error) {
-        console.error("❌ Erreur lors du chargement des favoris :", error);
-        animeFavori.innerHTML = `<p style="text-align: center; margin: 50px; color: red;">Erreur lors du chargement des favoris.</p>`;
+    if (window.favorites.size === 0) {
+        displayNoFavorites();
+        return;
     }
+
+    animeFavori.innerHTML = `<p style="text-align:center;margin:50px;">Chargement des favoris...</p>`;
+
+    const favoriteAnimes = [];
+    for (const animeId of Array.from(window.favorites)) {
+        try {
+            const response = await fetch(
+                `${window.BASE_URL}/tv/${animeId}?api_key=${window.API_KEY}&language=fr-FR`
+            );
+            if (response.ok) {
+                favoriteAnimes.push(await response.json());
+            }
+        } catch (error) {
+            console.warn(`⚠️ Impossible de charger l'anime ${animeId}:`, error);
+        }
+    }
+
+    if (favoriteAnimes.length === 0) {
+        displayNoFavorites();
+        return;
+    }
+
+    displayFavoriteAnimes(favoriteAnimes);
 };
 
 // 📌 Afficher les animes favoris
@@ -165,29 +132,29 @@ function displayFavoriteAnimes(favoriteAnimes) {
 
     favoriteAnimes.forEach(anime => {
         const { id, name, first_air_date, poster_path } = anime;
-
         const animeCard = document.createElement("div");
         animeCard.classList.add("anime-card");
         animeCard.innerHTML = `
             <div class="card-container">
                 <div class="poster">
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : './assets/img/placeholder.svg'}" 
-                         alt="${name}" loading="lazy">
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : "./assets/img/placeholder.svg"}"
+                         alt="${name}" loading="lazy"
+                         onerror="this.src='./assets/img/placeholder.svg'">
                 </div>
                 <div class="card-buttons">
-                    <img class="favorite-icon" 
+                    <img class="favorite-icon"
                          src="./assets/img/check.svg"
-                         data-id="${id}" 
+                         data-id="${id}"
                          title="Retirer des favoris">
-                    <img class="info-icon" 
+                    <img class="info-icon"
                          src="./assets/img/info.svg"
-                         data-id="${id}" 
+                         data-id="${id}"
                          title="Voir plus d'infos">
                 </div>
                 <div class="card-info">
                     <h3 class="anime-title">${name}</h3>
                     <p class="anime-year">
-                        <strong>Année :</strong> 
+                        <strong>Année :</strong>
                         ${first_air_date ? first_air_date.split("-")[0] : "Inconnue"}
                     </p>
                 </div>
@@ -196,42 +163,40 @@ function displayFavoriteAnimes(favoriteAnimes) {
         animeFavori.appendChild(animeCard);
     });
 
-    // Ajouter les événements
-    animeFavori.querySelectorAll(".favorite-icon").forEach(button => {
-        button.addEventListener("click", (event) => {
+    animeFavori.querySelectorAll(".favorite-icon").forEach(btn => {
+        btn.addEventListener("click", event => {
             window.toggleFavorite(event.target.dataset.id, event.target);
         });
     });
 
-    animeFavori.querySelectorAll(".info-icon").forEach(button => {
-        button.addEventListener("click", (event) => {
-            if (window.openModal) {
-                window.openModal(event.target.dataset.id);
-            }
+    animeFavori.querySelectorAll(".info-icon").forEach(btn => {
+        btn.addEventListener("click", event => {
+            if (window.openModal) window.openModal(event.target.dataset.id);
         });
     });
+
+    console.log(`📺 ${favoriteAnimes.length} favoris affichés`);
 }
 
-// 📌 Afficher le message quand aucun favori
+// 📌 Message quand aucun favori
 function displayNoFavorites() {
     const animeFavori = document.getElementById("animeFavori");
     if (!animeFavori) return;
-
     animeFavori.innerHTML = `
-        <div style="text-align: center; margin: 50px;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">📺</div>
+        <div style="text-align:center;margin:50px;">
+            <div style="font-size:4rem;margin-bottom:20px;">📺</div>
             <h3>Aucun anime en favori</h3>
-            <p style="margin: 20px 0; opacity: 0.8;">
+            <p style="margin:20px 0;opacity:0.8;">
                 Retournez à la liste principale pour ajouter des animes à vos favoris !
             </p>
-            <a href="index.html" style="
-                display: inline-block;
-                background: var(--button-bg, #ff4d4d);
-                color: white;
-                padding: 10px 20px;
-                text-decoration: none;
-                border-radius: 5px;
-                margin-top: 10px;
+            <a href="./index.html" style="
+                display:inline-block;
+                background:var(--button-bg,#ff4d4d);
+                color:white;
+                padding:10px 20px;
+                text-decoration:none;
+                border-radius:5px;
+                margin-top:10px;
             ">← Retour à la liste</a>
         </div>
     `;
@@ -240,13 +205,10 @@ function displayNoFavorites() {
 // 📌 Initialisation automatique
 document.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Initialisation du module favoris");
-
-    // Attendre que les autres modules soient chargés
     setTimeout(() => {
         if (window.Cookies) {
             window.initFavorites();
         } else {
-            console.warn("⚠️ Module Cookies non disponible, réessai dans 500ms");
             setTimeout(() => {
                 if (window.Cookies) {
                     window.initFavorites();

@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Animés</title>
-    
+    <title>AnimeFavoris — Liste des Animés</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
     <link rel="stylesheet" href="./assets/styles.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 </head>
 <body>
     <header>
         <button id="darkModeToggle">🌙 Mode Sombre</button>
-        <h1> AnimeFavoris <!--Liste des Animés--></h1>
-        
+        <h1>AnimeFavoris</h1>
+
         <div id="filters">
             <input type="text" id="searchBar" placeholder="Rechercher un anime...">
-            
+
             <label for="yearSelect">Filtrer par année :</label>
             <select id="yearSelect">
                 <option value="">Toutes</option>
@@ -30,21 +28,19 @@
                 <option value="2015">2015+</option>
                 <option value="2000">2000+</option>
             </select>
-            
+
             <button class="category-btn active" data-category="16">Anime</button>
             <button class="category-btn" data-category="10759">Action</button>
             <button class="category-btn" data-category="35">Comédie</button>
 
-            <button id="favoritesButton"><a href="./favoris.html">Voir Favoris</a></button>
+            <a href="./favoris.html" class="btn-link" id="favoritesButton">Voir Favoris ⭐</a>
         </div>
     </header>
 
     <!-- Carrousel des animés populaires -->
     <section id="carousel">
         <div class="swiper-container">
-            <div class="swiper-wrapper">
-                <!-- Les slides seront ajoutées dynamiquement ici -->
-            </div>
+            <div class="swiper-wrapper"></div>
             <div class="swiper-pagination"></div>
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
@@ -52,12 +48,12 @@
     </section>
 
     <div class="container" id="animeList">
-        <p style="text-align: center; margin: 50px;">Chargement des animes...</p>
+        <p style="text-align:center;margin:50px;">Chargement des animes...</p>
     </div>
 
-    <button id="loadMore" style="display: none;">Voir plus</button>
+    <button id="loadMore" style="display:none;">Voir plus</button>
 
-    <!-- Modale pour afficher les détails d'un anime -->
+    <!-- Modale -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -66,8 +62,6 @@
             <p id="animeRating"></p>
             <p id="animeGenres"></p>
             <img id="animeImage" src="" alt="Affiche de l'anime">
-            
-            <!-- Nouvelle boîte pour la description -->
             <div class="modal-description">
                 <h3>Description</h3>
                 <p id="animeDescription"></p>
@@ -77,40 +71,18 @@
 
     <!-- Scripts dans l'ordre correct -->
     <script src="./api/config.js"></script>
-    <!--test --> 
-
     <script src="./js/cookies.js"></script>
     <script src="./js/favoris.js"></script>
     <script src="./js/darkmods.js"></script>
-    <script src="./js/rechercher.js"></script>
     <script src="./js/animes.js"></script>
+    <script src="./js/rechercher.js"></script>
     <script src="./js/swiper.js"></script>
     <script src="./js/events.js"></script>
-    
-    <!-- Script spécifique à la page index -->
+
     <script>
-        // Configuration spécifique à la page principale
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("🏠 Page principale - Initialisation");
-            
-            // Cette page affiche tous les animes (pas seulement les favoris)
-            window.showFavoritesOnly = false;
-            
-            // Initialiser tous les modules
-            setTimeout(() => {
-                console.log("✅ Modules chargés, démarrage de l'application");
-                
-                // Charger les animes par défaut si pas encore fait
-                if (window.fetchAnimes && (!window.allAnimes || window.allAnimes.length === 0)) {
-                    window.fetchAnimes();
-                }
-                
-                // Initialiser la recherche si pas encore fait
-                if (window.initSearch && !document.querySelector('.category-btn.active')) {
-                    window.initSearch();
-                }
-            }, 200);
-        });
+        // Page principale — flag global
+        window.showFavoritesOnly = false;
+        window.currentPage = 1;
     </script>
 </body>
-</html> 
+</html>
