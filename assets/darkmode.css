@@ -1,3 +1,16 @@
+/**
+ * ⚠️ FICHIER OBSOLÈTE — Ne pas utiliser
+ * 
+ * Ce fichier est conservé pour compatibilité historique uniquement.
+ * 
+ * DEPUIS v2.1.0 : Toutes les règles de dark mode sont intégrées dans styles.css
+ * Utilisez à la place :
+ *   - CSS variables dans :root et [data-theme="dark"]
+ *   - Classe body.dark-mode (gérée par js/darkmods.js)
+ * 
+ * Supprimer ce fichier n'affectera pas le fonctionnement.
+ * Ne pas l'importer dans les pages HTML.
+ */
 
 body.dark-mode {
     background-color: #121212;
