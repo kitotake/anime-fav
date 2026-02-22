@@ -65,13 +65,13 @@ window.toggleFavorite = function (animeId, buttonElement) {
         if (window.favorites.has(animeId)) {
             // Retirer des favoris
             window.favorites.delete(animeId);
-            buttonElement.src = "../assets/img/heart-filled.svg";
+            buttonElement.src = "./assets/img/heart-filled.svg";
             buttonElement.title = "Ajouter aux favoris";
             console.log("➖ Retiré des favoris :", animeId);
         } else {
             // Ajouter aux favoris
             window.favorites.add(animeId);
-            buttonElement.src = "../assets/img/check.svg";
+            buttonElement.src = "./assets/img/check.svg";
             buttonElement.title = "Retirer des favoris";
             console.log("➕ Ajouté aux favoris :", animeId);
         }
@@ -171,16 +171,16 @@ function displayFavoriteAnimes(favoriteAnimes) {
         animeCard.innerHTML = `
             <div class="card-container">
                 <div class="poster">
-                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" 
+                    <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : './assets/img/placeholder.svg'}" 
                          alt="${name}" loading="lazy">
                 </div>
                 <div class="card-buttons">
                     <img class="favorite-icon" 
-                         src="../assets/img/check.svg"
+                         src="./assets/img/check.svg"
                          data-id="${id}" 
                          title="Retirer des favoris">
                     <img class="info-icon" 
-                         src="../assets/img/info.svg"
+                         src="./assets/img/info.svg"
                          data-id="${id}" 
                          title="Voir plus d'infos">
                 </div>
