@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Favoris - Animes</title>
-    <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="stylesheet" href="/../assets/styles.css">
 </head>
 <body>
     <header>
         <button id="darkModeToggle">🌙 Mode Sombre</button>
-        <h1>Mes Favoris</h1>
+        <h1>  AnimeFavoris <!--Mes Favoris--></h1>
         
         <div id="filters">
             <label for="yearSelect">Filtrer par année :</label>
@@ -23,7 +23,7 @@
                 <option value="2000">2000+</option>
             </select>
             
-            <button id="backButton"><a href="index.html">← Retour à la liste</a></button>
+            <button id="backButton"><a href="./index.html">← Retour à la liste</a></button>
         </div>
     </header>
 
@@ -52,11 +52,11 @@
     </div>
 
     <!-- Scripts dans l'ordre correct -->
-    <script src="../api/config.js"></script>
-    <script src="../js/cookies.js"></script>
-    <script src="../js/favoris.js"></script>
-    <script src="../js/darkmods.js"></script>
-    <script src="../js/animes.js"></script>
+    <script src="/../api/config.js"></script>
+    <script src="/../js/cookies.js"></script>
+    <script src="/../js/favoris.js"></script>
+    <script src="/../js/darkmods.js"></script>
+    <script src="/../js/animes.js"></script>
     
     <!-- Script spécifique à la page favoris -->
     <script>
@@ -210,16 +210,16 @@
                 animeCard.innerHTML = `
                     <div class="card-container">
                         <div class="poster">
-                            <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '../assets/img/placeholder.svg'}" 
+                            <img src="${poster_path ? window.IMAGE_BASE_URL + poster_path : '/../assets/img/placeholder.svg'}" 
                                  alt="${name}" loading="lazy">
                         </div>
                         <div class="card-buttons">
                             <img class="favorite-icon" 
-                                 src="../assets/img/check.svg"
+                                 src="/../assets/img/check.svg"
                                  data-id="${id}" 
                                  title="Retirer des favoris">
                             <img class="info-icon" 
-                                 src="../assets/img/info.svg"
+                                 src="/../assets/img/info.svg"
                                  data-id="${id}" 
                                  title="Voir plus d'infos">
                         </div>
